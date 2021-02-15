@@ -1,0 +1,55 @@
+<div ng-if="ready" class="container_activites" ng-controller="ctrlRealTime" ng-init="setRealTimeParamAndInitApp('Notification')">
+	
+	<div >
+
+		<div ng-controller="ctrlNotifications" ng-init="setNotifications(ME, 'change_player')">
+
+			<div class="container" style="background:linear-gradient(#FAF8D9, #FCF6E8); padding:2vw;" ng-if="notifications_OK">
+
+				
+				<fieldset >
+					<legend>Mes notifications</legend>
+					<div style="max-height:2000vh; overflow:auto; background-color:white; box-shadow: 0px 0px 1px 1px black;">
+						<div ng-repeat="notification in notifications | orderBy:'-emission_date'">
+							<div style="font-size:70%; font-style:italic">- Posté le {{notification.emission_date | date:'dd/MM/yyyy'}} à {{notification.emission_date | date:'h:mma'}} -</div>
+							<div ng-switch on="notification.cat">
+								<div ng-switch-when="Request">							
+									<p ng-controller="ctrlTextNotifs" ng-init="message=getTextNotif(ME, notification)" ng-bind-html="message.text | trustAsHtml">
+									</p>
+								</div>
+								<div ng-switch-when="Offer">							
+									<p ng-controller="ctrlTextNotifs" ng-init="message=getTextNotif(ME, notification)" ng-bind-html="message.text | trustAsHtml">
+									</p>
+								</div>
+								<div ng-switch-when="Report" ng-controller="ctrlReport" ng-init="setReport(notification.action)">
+									<p style="display:inline-block" ng-controller="ctrlTextNotifs" ng-init="message=getTextNotif(ME, notification)" ng-bind-html="message.text | trustAsHtml"></p>
+									<u style="display:inline-block; cursor:pointer" ng-controller="ctrlReportPopup" ng-click="openReportPopup()">cliquer ici
+										<report-i ng-if="report_OK && show_report" me="ME" report="report" offer="offer" request="request"></report-i>
+									</u>
+								</div>
+								<div ng-switch-when="Network">
+									<relashionship context="notification.cat" ref="ME" other="notification.player" notif="true" next="false"></relashionship>	
+								</div>
+								<div ng-switch-when="Team">
+									<relashionship ng-if="notification.type=='Membership'" context="notification.type" ref="ME" other="notification.player" notif="true" next="false"></relashionship>	
+									<div style="display:inline-block" ng-if="notification.type!='Membership'">
+										<p ng-controller="ctrlTextNotifs" ng-init="message=getTextNotif(ME, notification)" ng-bind-html="message.text | trustAsHtml">
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>		
+					</div>
+				</fieldset>
+
+
+			</div>
+
+		</div>
+
+	</div>
+	
+</div>
+	
+	
+	

@@ -1,0 +1,40 @@
+<div class="col-xs-10 col-sm-6 col-md-6 col-lg-6 col-xs-offset-1 col-sm-offset-3 col-md-offset-3 col-lg-offset-3 popup">
+	
+	<div class="popup_header">
+		<div class="popup_title">AVIS DE CHAT</div>
+		<div class="popup_close">X</div>
+	</div>	
+
+	<div class="container popup_content">
+
+		<div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:20px">
+			Avis sur {{marks.user.username}} concernant le chat de {{context.teacher.username}}
+		</div>
+
+		<thumbs-resume marks="marks.marks"></thumbs-resume>
+
+		<table class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" style="color:gold; font-weight:bold; font-weight:bold; vertical-align:middle">
+			<tbody>
+				<tr>
+					<td align="center" class="row col-xs-4 col-sm-4 col-md-4 col-lg-4">
+						<span style="font-size:1.2vw" ng-repeat="assessor in marks.marks.one.users">
+							<a href='/Profile/{{assessor._id}}'>{{assessor.username}}</a>
+						</span>
+					</td>
+					<td align="center" class="row col-xs-4 col-sm-4 col-md-4 col-lg-4">
+						<span style="font-size:1.2vw" ng-repeat="assessor in marks.marks.two.users">
+							<a href='/Profile/{{assessor._id}}'>{{assessor.username}}</a>
+						</span>
+					</td>
+					<td align="center" class="row col-xs-4 col-sm-4 col-md-4 col-lg-4">
+						<span style="font-size:1.2vw" ng-repeat="assessor in marks.marks.three.users">
+							<a href='/Profile/{{assessor._id}}'>{{assessor.username}}</a>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+
+</div>

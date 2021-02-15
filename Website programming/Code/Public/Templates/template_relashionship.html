@@ -1,0 +1,36 @@
+<span style="display:inline-block; vertical-align:middle">
+
+
+<div ng-controller="ctrlRelashionship" ng-init="setRelashionshipDatas(ref, other, context, notif)">
+
+	<div ng-if="!notif">
+		<div ng-if="!next" ng-controller="ctrlRelashionshipPopup">
+			<img class="img-responsive" style="height:1em; cursor:pointer" ng-src="Images/{{relashionship_datas.current.img}}.png" ng-click="openRelashionshipPopup()">
+				<action-relashionship ng-if="show_relashionship && action_possible" ref="ref" other="other" datas="relashionship_datas.actions" index=0 context="context"></action-relashionship>
+			</img>
+		</div>
+		<div ng-if="next" ng-controller="ctrlRelashionshipPopup">
+			<img ng-if="(relashionship_datas.current.status=='Accepted') || (relashionship_datas.current.status=='Accepting')" class="img-responsive" style="height:1.5em; cursor:pointer" ng-src="Images/{{relashionship_datas.actions[0].next_img}}.png" ng-click="openRelashionshipPopup()">
+				<action-relashionship ng-if="show_relashionship" ref="ref" other="other" datas="relashionship_datas.actions" index=0 context="context"></action-relashionship>	
+			</img>
+		</div>
+		<div ng-if="next" ng-controller="ctrlRelashionshipPopup">
+			<img ng-if="(relashionship_datas.current.status!='Accepted') && (relashionship_datas.current.status!='Accepting')" class="img-responsive" style="height:1.5em; cursor:pointer" ng-src="Images/{{relashionship_datas.current.img}}.png" ng-click="openRelashionshipPopup()">
+				<action-relashionship ng-if="show_relashionship" ref="ref" other="other" datas="relashionship_datas.actions" index=0 context="context"></action-relashionship>	
+			</img>
+		</div>
+	</div>
+	<div ng-if="notif" ng-repeat="datas_notif in relashionship_datas.notifs">
+		<div ng-controller="ctrlRelashionshipPopup">
+			<img class="img-responsive" style="height:1.5em; cursor:pointer" ng-src="Images/{{datas_notif.img}}.png" ng-click="openRelashionshipPopup()">
+				<action-relashionship ng-if="show_relashionship && action_possible" ref="ref" other="other" datas="relashionship_datas.actions" index="$index" context="context"></action-relashionship>	
+			</img>
+		</div>
+	</div>
+	<p ng-if="notif" style="display:inline-block; margin-left:0.5vw" ng-controller="ctrlTextNotifs" ng-bind-html="relashionship_datas.notifs[0].text | trustAsHtml"></p>
+
+</div>
+
+
+
+</span>

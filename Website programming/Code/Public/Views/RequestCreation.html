@@ -1,0 +1,145 @@
+<div ng-if="ready" ng-controller="ctrlRealTime" ng-init="setRealTimeParamAndInitApp('Notification')">	
+
+	<div class="container" ng-controller="ctrlCartRequest">
+
+
+		<h2>{{ME.username}}, que souhaites-tu faire pendant la séance ?</h2>
+
+			
+		<div class="row" ng-controller="ctrlPedagogicFields">
+
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-if="categories_OK"> 
+
+				<select ng-show="true" class="form-control select-sm" ng-options="category.name for category in categories" ng-init="selection_categories.selected_category=categories[0]" ng-model="selection_categories.selected_category" ng-change="setLevels()"></select>
+				
+				<div class="form-group" style="margin:5vw 1vw 7vw 0vw">
+					<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 control-label">
+						Choisis un niveau de travail:
+					</label>
+					<p class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+						<select class="form-control" ng-options="level.name for level in selection_categories.selected_category.levels" ng-init="selection_categories.selected_level=selection_categories.selected_category.levels[0]" ng-model="selection_categories.selected_level"></select>
+					</p>
+				</div>					
+
+
+				<div ng-repeat="format in selection_categories.selected_level.formats" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin:5vw 1vw 7vw 0vw; cursor:pointer; background-color:#DFE6E8">
+					<details ng-controller="ctrlElementI">
+						<summary style="font-size:2.3vw">
+							<span class="glyphicon glyphicon-book"></span>
+							{{format.name}}
+						</summary>
+						<div>
+							<div>
+								<div style="margin:0; font-size:2.1vw">Matières</div>
+								<select class="form-control" ng-options="topic.name for topic in selection_categories.selected_level.topics" ng-init="selection_categories.selected_topics[$index]=selection_categories.selected_level.topics[0]" ng-model="selection_categories.selected_topics[$index]" ng-change="setSubjects()"></select>
+							</div>
+							<textarea ng-if="format.name=='Question'" class="form-control" style="margin-top:0.5vw" ng-model="selection_categories.question"></textarea>
+							<div ng-if="format.name!='Question'">
+								<div style="margin:0; font-size:2.1vw">Chapitres</div>
+								<select class="form-control" style="max-height:15vw" multiple ng-options="subject.name for subject in selection_categories.selected_topics[$index].subjects" ng-model="selection_categories.selected_subjects"></select>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center;">
+							<button class="btn btn-default" ng-click="addElement($index, format)">
+								<span class="glyphicon glyphicon-shopping-cart"></span>
+								Ajouter
+							</button>
+						</div>
+					</details>
+				</div>
+
+			</div>
+
+		
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-left:1px solid; background:radial-gradient(#c2c2c2, #F2F4F5);"> 
+				
+				<h3 style="border-bottom:1px solid">
+					<span class="glyphicon glyphicon-shopping-cart"></span>
+					Ma séance contiendra
+				</h3>
+				
+				<form class="row form-horizontal" style="margin:2vw" name="requestForm" ng-submit="createRequest()" ng-controller="setupRequest">
+
+
+					<div style="margin-bottom:1vw; background:linear-gradient(#c7dbf9, #DAF0F0)" ng-repeat="content in request.contents">
+						<fieldset style="display:block" ng-controller="ctrlElementI">
+							<legend>{{content.format.name}}</legend>
+							<div class="row" style="padding:0">
+								<u class="col-xs-9 col-sm-9 col-md-9 col-lg-9" style="text-align:left">{{content.topic.name}}</u>
+								<p class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="text-align:right">{{content.level.name}}</p>
+							</div>
+							<div class="row" style="max-height:500px; padding:0; overflow:auto">
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="line-height:1.6vw">
+									<ul ng-repeat="subject in content.subjects">
+										<li style="margin-left:1vw" ng-if="content.format.name!='Question'">{{subject.subject.name}}</li>
+									</ul>
+									<textarea ng-if="content.format.name=='Question'">{{content.other}}</textarea>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									<p class="glyphicon glyphicon-trash" style="float:right; cursor:pointer" ng-click="removeElement($index)"></p>
+								</div>
+							</div>	
+						</fieldset>
+					</div>
+						
+
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
+							Commentaire:
+							<textarea ng-model="request.description"></textarea>
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
+							Délai:
+							<input class="form-control" type="datetime-local" ng-init="request.target_date=next_date" ng-model="request.target_date" required></input>
+						</div>
+
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border:0.5px dotted black">
+							<div class="form-group">
+								<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+									Type d'annonce
+								</div>
+								<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="text-align:center">
+									<input style="vertical-align:middle; margin:0" type="radio" name="privatisation" ng-init="private=false" ng-model="private" ng-value="false" required>Public</input>							
+								</div>
+								<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="text-align:center">
+									<input style="vertical-align:middle; margin:0" type="radio" name="privatisation" ng-model="private" ng-value="true" required>Equipe</input>
+								</div>
+							</div>
+							<div ng-if="!private">
+								Partager une séance RDV avec
+								<input class="form-control" style="display:inline-block; width:10vw" type="number" min="0" max="2" ng-init="request.nb_participants=2" ng-model="request.nb_participants" required></input>
+								autres participants.
+							</div> 	<!-- Modalités du cours (max 3 élèves). Si bous souahitez être seul, "cocher la case" -->		
+							<div ng-if="private">
+								<select class="form-control" multiple ng-options="team.name for team in my_linked_teams" ng-model="selection_teams.selected_teams"></select>
+							</div>	
+						</div>	
+
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
+							Lieu de la séance:
+							<input google-place class="form-control" ng-init="request.address=ME.address" ng-model="request.address"name="address" check-address required></input>
+						</div>
+
+						<div class="row" style="text-align:center;">
+							<button class="btn" style="background-color:#ccffff" type="submit" ng-disabled="request.contents.length==0 || requestForm.address.$error.checkAddress || (private && selection_teams.selected_teams.length==0)">
+								PUBLIER
+							</button>
+						</div>
+
+					</div>
+
+
+				</form>
+				
+			</div>
+			
+			<div class="background_popup"></div>
+
+	</div>
+	
+</div>
+
+		

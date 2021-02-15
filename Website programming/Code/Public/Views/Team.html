@@ -1,0 +1,151 @@
+<div ng-if="ready" ng-controller="ctrlRealTime" ng-init="setRealTimeParamAndInitApp('Notification')">
+
+	<div>
+
+		<div ng-controller="ctrlTeam" ng-init="setTeam()">
+
+			<div ng-if="team_OK || new_team" ng-controller="ctrlRelashionship" ng-init="new_team ? '' : setRelashionshipDatas(ME, team, 'Captaincy', false)">
+
+				<div class="container" ng-init="new_team ? '' : iam_captain = isCaptain(current_status, team)">
+
+					<form class="form-horizontal" style="background:linear-gradient(#FAF8D9, #FCF6E8)" name="teamForm" ng-submit="updateTeam(team)">
+						<div class="row-eq-height">
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	
+								<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+									<div class="form-group" >
+										<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 control-label">
+											Nom de l'équipe (*):
+										</label>
+										<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+											<input class="form-control" type="text" ng-model="team.name" name="name" ng-disabled="!iam_captain.result" check-team-name required></input>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-xs-5 col-sm-5 col-md-5 col-lg-5 control-label">
+											Couleurs de l'équipe:
+										</label>
+										<div>
+											<input class="form-control" style="display:inline-block; width:20%; margin:0 1.5vw 0 1.5vw" type="color" ng-model="team.first_color" name="colors" ng-disabled="!iam_captain.result"></input>
+											<input class="form-control" style="display:inline-block; width:20%; margin:0 1.5vw 0 1.5vw" type="color" ng-model="team.second_color" name="colors" ng-disabled="!iam_captain.result"></input>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="display:inline-block">
+											Fondateur:
+										</div>
+										<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="display:inline-block">
+											{{team.founder.username}}
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="display:inline-block">
+											Date de création:
+										</div>
+										<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="display:inline-block">
+											{{team.foundation_date | date:'dd/MM/yyyy'}}
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="display:inline-block">
+											Privatisation du groupe:
+										</div>
+										<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="display:inline-block">
+											 <input type="checkbox" ng-model="team.private" ng-init="team.private" ng-disabled="!iam_captain.result">
+										</div>
+									</div>
+								</div>
+								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" style="position:relative; height:100%;">
+									<label for="photo">
+									      <input type="file" style="display:none;" name="photo" id="photo" ng-if="iam_captain" file-model="updatePhoto"/>
+									      <div ng-class="{'loader':loading_photo, 'img photo editable':iam_captain.result, 'img photo':!iam_captain.result}" style="position:absolute; top:50%; left:50%; transform:translateX(-50%) translateY(-50%); width:10vw; height:10vw; background-image:url('{{team.src_photo}}')"></div>
+									  </label>
+								</div>
+							</div>
+						</div>
+						<div class="row" style="text-align:center;">
+							<button class="btn" type="submit" ng-disabled="teamForm.name.$error.checkTeamName">
+								SAUVEGARDER
+							</button>
+						</div>
+					</form>
+
+
+					<div ng-if="!new_team">
+
+						<div class="row-eq-height">
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-top:2vw; max-height:500px; padding:0; overflow:auto; background-color:white; box-shadow: 0px 0px 1px 1px #f47d42;" ng-if="is_member" ng-controller="ctrlNotifications" ng-init="setNotifications(team, 'change_player')">
+								<div ng-repeat="notification in notifications | orderBy:'-emission_date'">
+									<div style="font-size:70%; font-style:italic">- Posté le {{notification.emission_date | date:'dd/MM/yyyy'}} à {{notification.emission_date | date:'h:mma'}} -</div>
+									<div ng-switch on="notification.cat">
+										<p ng-controller="ctrlTextNotifs" ng-switch-when="Request" ng-init="message=getTextNotif(team, notification)" ng-bind-html="message.text | trustAsHtml">
+										</p>
+										<p ng-controller="ctrlTextNotifs" ng-switch-when="Offer" ng-init="message=getTextNotif(team, notification)" ng-bind-html="message.text | trustAsHtml">
+										</p>
+										<div ng-switch-when="Team">
+											<p ng-if="((notification.type!='Membership')&&(notification.type!='Captaincy'))" ng-controller="ctrlTextNotifs" ng-init="message=getTextNotif(team, notification)" ng-bind-html="message.text | trustAsHtml"></p>
+											<div ng-if="notification.type=='Membership'" ng-init="context='Membership'">
+												<relashionship context="context" ref="team" other="notification.player" notif="true" next="false"></relashionship>
+											</div>
+											<div ng-if="((notification.type=='Captaincy') && (notification.action._id!=ME._id))" ng-init="context='Captaincy'">
+												<relashionship context="context" ref="team" other="notification.player" notif="true" next="false"></relashionship>
+											</div>
+											<div ng-if="((notification.type=='Captaincy') && (notification.action._id==ME._id))" ng-init="context='Captaincy'">
+												<relashionship context="context" ref="notification.player" other="team" notif="true" next="false"></relashionship>
+											</div>					
+										</div>
+									</div>
+								</div>
+							</div>	
+						</div>
+						
+						<div class="row" style="margin-top:5vh; min-height:100px; border-radius:20px; background:linear-gradient(to top right, {{team.first_color}}, {{team.second_color}});">	
+							<h2 style="text-align:center; background-color:white" ng-init="context='Membership'">
+								Membres de l'équipe <i style="font-size:2vw">{{team.name}}</i>
+								<relashionship context="context" ref="ME" other="team" notif="false" next="false"></relashionship>
+							</h2>	
+							<div class="col-xs-3 col-sm-3 col-md-2 col-lg-2" style="margin:1vw" ng-repeat="user in team_users" ng-controller="ctrlRelashionship" ng-init="context='Captaincy'">
+								<div ng-init="setRelashionshipDatas(team, user.user, context, false); is_captain = isCaptain(current_status, team)" ng-class="{'thumbnail captain':is_captain.result, 'thumbnail':!is_captain.result}">
+									<div class="img-wrapper">
+										<img ng-src="{{user.user.src_photo}}">
+									</div>
+									<div class="img-caption" ng-init="context_1='Captaincy'; context_2='Membership'">
+										{{user.user.username}}
+										<div ng-if="(iam_captain.result && ( (iam_captain.alone && (current_status!='Accepting') && (current_status!='Accepted')) || !iam_captain.alone ))">
+											<relashionship ng-if="((user.user._id != ME._id) && !is_captain.result)" context="context_1" ref="team" other="user.user" notif="false" next="true"></relashionship>
+											<relashionship ng-if="user.user._id == ME._id" context="context_1" ref="user.user" other="team" notif="false" next="true"></relashionship>
+										</div>
+										<relashionship ng-if="(!iam_captain.result && (user.user._id == ME._id))" context="context_1" ref="user.user" other="team" notif="false" next="false"></relashionship>
+										<relashionship ng-if="(iam_captain.result && !is_captain.result && (user.user._id != ME._id))" context="context_2" ref="team" other="user.user" notif="false" next="true"></relashionship>
+										<relashionship ng-if="(!is_captain.result && (user.user._id==ME._id))" context="context_2" ref="user.user" other="team" notif="false" next="true"></relashionship>	
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row" style="margin-top:2vw">
+							<h4>Autres membres</h4>
+							<div class="col-xs-2 col-sm-1 col-md-1 col-lg-1" style="margin:0.5vw; font-size:0.7vw" ng-repeat="user in other_users">
+								<div class="thumbnail">
+									<div class="img-wrapper">
+										<img ng-src="{{user.src_photo}}">
+									</div>
+									<div class="img-caption" ng-init="context='Membership'">
+										{{user.username}}
+										<relashionship ng-if="$parent.$parent.iam_captain.result" context="context" ref="team" other="user" notif="false" next="false"></relashionship>
+									</div>	
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>

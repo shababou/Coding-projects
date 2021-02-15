@@ -1,0 +1,95 @@
+<div ng-if="ready">
+
+	<div ng-controller="ctrlDialoguesOffer" ng-init="setDialoguesOffer('Chat')">
+		
+		<div class="container" ng-if="offer_OK">	
+
+			<div class="row" style="margin:2% 2% 3% 2%">
+				<request-i request="request" profile="ME" kind="kind"></request-i>
+			</div>
+			
+
+			<div class="row">
+
+				<div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-1 col-lg-offset-1">
+
+					<div ng-controller="setupOffer">
+
+						<fieldset> 
+							<legend style="background:linear-gradient(to right, #c7dbf9, #ccffff); font-size:2vw">
+								CHAT avec {{offer.teacher.username}}
+							</legend>
+						</fieldset> 
+
+						<div class="row">
+							<div class="hidden-xs col-sm-2 col-md-2 col-lg-2" style="background-color:#CCE4FF; border:1px solid">
+								<u>Connectés:</u>
+								<p style="margin:0" ng-repeat="participant in participants">
+									{{participant.username}}
+								</p>
+							</div>
+						</div>
+
+						<div class="row" style="margin-top:10px" ng-controller="ctrlDialogues" ng-init="setDialogue(offer)">
+							<div ng-if="dialogue_OK" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background:linear-gradient(#C8E6FA, #E6ECF0); border:1px solid" ng-controller="ctrlChatMarks" ng-init="setChatMarks(dialogue.messages)">
+								<form name="messageForm" ng-submit="sendMessage(message)">
+									<u>Parler:</u>
+									<div>
+										<textarea style="display:inline-block; vertical-align:middle; width:85%" ng-model="message" required></textarea>	
+										<button style="display:inline-block; vertical-align:middle; width:12%; text-align:center" type="submit">PARLER</button>	
+									</div>
+								</form>
+								<div ng-if="marks_OK" style="margin:5px; min-height:100px; max-height:700px; overflow:auto; border-top:1px solid">
+									<div ng-repeat="message_dialogue in dialogue.messages | orderBy:'-emission_date'">
+										<div ng-controller="ctrlChatMarksUser" ng-init="setMarksUser(message_dialogue.message.user)">
+											<div ng-if="message_dialogue.message.user._id==ME._id" class="bubble_mine_container">
+												<i class="bubble_mine_date">
+													Message envoyé par {{message_dialogue.message.user.username}}
+													<span class="glyphicon glyphicon-new-window" ng-controller="ctrlChatMarksPopup" ng-click="openChatMarksPopup()">
+														<chat-marks ng-if="show_chat_marks" context="offer" mark="marks_user.all_marks"></chat-marks>
+													</span>
+													le {{message_dialogue.message.emission_date | date:'dd/MM/yyyy'}} à {{message_dialogue.message.emission_date | date:'h:mma'}}
+												</i>
+												<div class="bubble_shape mine" style="background-color:#D2EAFA;">{{message_dialogue.message.message}}</div>
+											</div>
+											<div ng-if="message_dialogue.message.user._id!=ME._id" class="bubble_their_container">
+												<i class="bubble_their_date">
+												Message envoyé par {{message_dialogue.message.user.username}} 
+												<thumbs-rating ng-if="marks_user_OK" style="display:inline-block; vertical-align:center" mark="marks_user.my_mark.marks[0].mark" ng-click="updateMark(marks_user.my_mark)"></thumbs-rating>
+												<span class="glyphicon glyphicon-new-window" ng-controller="ctrlChatMarksPopup" ng-click="openChatMarksPopup()">
+													<chat-marks ng-if="show_chat_marks" context="offer" marks="marks_user.all_marks"></chat-marks>
+												</span>
+												le {{message_dialogue.message.emission_date | date:'dd/MM/yyyy'}} à {{message_dialogue.message.emission_date | date:'h:mma'}}</i>
+												<div class="bubble_shape their" style="background-color:#D2EAFA;">{{message_dialogue.message.message}}</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div ng-controller="ctrlInvitations" ng-init="setPotentialGuests('Chat')">
+							<div class="row" style="margin-top:10px" ng-repeat="guests in potential_guests">
+								Personnes à inviter <span ng-if="guests.group.name">(Equipe <a  href="/Team/{{guests.group._id}}">{{guests.group.name}}</a>)</span>
+								<select class="form-control" style="max-height:15vw" multiple ng-options="user.username for user in guests.users" ng-model="users_to_invite[$index]">
+								</select>
+								<button class="btn btn-default" ng-click="sendInvitations()">
+									<span class="glyphicon glyphicon-bullhorn"></span>
+									Inviter
+								</button>
+							</div>
+						</div>
+				
+					</div>
+
+				</div>
+
+
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+

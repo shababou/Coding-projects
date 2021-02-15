@@ -1,0 +1,88 @@
+<div class="container-fluid">
+
+	<div class="row" style="font-style:italic">Offre émise le {{offer.emission_date | date:'dd/MM/yyyy'}} à {{offer.emission_date | date:'h:mma'}}</div>
+
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background:linear-gradient(#EDA6B2, #F95B00)">
+
+		<div class="row row-eq-height" style="border-style:solid; border-width:1px 1px 1px 1px;">
+			<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="position:relative; border-right:1px solid;">
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="padding:0">
+					<stars-rating title="{{$root.roundNumber(offer.teacher.global_average, 100)}}" mark="offer.teacher.global_average" state="Diffused"></stars-rating>
+					<div class="img" style="left:2.2vw; width:4vw; height:4vw; margin-bottom:2px; background-image:url('{{offer.teacher.src_photo}}');"></div>
+				</div>
+				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="position:absolute; width:100%; top: 50%; transform:translateY(-50%); text-align:center">
+					<p style="margin:0;">
+						{{offer.teacher.username}}
+					</p>
+				</div>
+			</div>	
+			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="position:relative; border-right:1px solid;">						
+				<p style="position:absolute; width:100%; left:50%; top:50%; transform:translate(-50%, -50%); text-align:center;">{{offer.teacher.activity}}</p>
+			</div>
+			<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="position:relative;">							
+				<p style="position:absolute; width:100%; left:50%; top:50%; transform:translate(-50%, -50%); text-align:center;">{{offer.RDV_datas.address.country}} - {{offer.RDV_datas.address.city}} - {{offer.RDV_datas.address.ZIP}}</p>
+			</div>
+		</div>
+
+		<div class="row row-eq-height" ng-controller="ctrlActionOnOffer">
+
+			<div class="line2_Chat available" style="height:5vw;" ng-show="offer.Chat_datas.open" ng-click="clickOnChatOffer(offer._id)">
+				<div class="img" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:7.5vw; height:5vw; background-image:url('Images/Chat.png'); background-position: 0% 0%;"></div>
+			</div>
+			
+			<div ng-class="{'line2_RDV available':RDV_available, 'line2_RDV':!RDV_available}" ng-show="offer.RDV_datas.open" ng-click="clickOnRDVOffer(offer._id)">
+				<div class="forbidden" ng-if="!RDV_available">Complet</div>
+				<div class="row row-eq-height">
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="position:relative; border-style:dashed; border-width:0 1px 1px 0;">
+						<div class="img" style="right:0.3vw; width:6vw; height:4vw; background-image:url({{offer.RDV_datas.src_img}}); background-position: 0% 0%;"></div>
+						<div style="display:inline-block; position:absolute; top:50%; left:60%; transform:translateY(-50%) translateX(-50%); width:65%; text-align:center; line-height:1.5vw">
+							<div style="margin:0; font-size:2.2vw; font-weight:bold">
+								{{offer.RDV_datas.price}}€
+							</div>
+							<i style="margin:0; font-size:1.6vw;" ng-if="offer.RDV_datas.nb_participants>1">
+								(<u>{{offer.RDV_datas.price_net_theo}}€</u> par personne)
+							</i>						
+						</div>
+					</div>
+					<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7" style="border-bottom:1px dashed;">
+						<u>Description:</u>
+						<p>
+							{{offer.RDV_datas.description}}
+						</p>
+					</div>
+				</div>
+				<div class="row row-eq-height">
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="border-right:1px dashed;">
+						<u>Participants:</u>
+						<p style="margin:0" ng-repeat="participant in offer.participants">
+							{{participant.user.username}}								
+						</p>
+					</div>
+					<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+						<div ng-repeat="time_slot in offer.RDV_datas.time_slots">
+							<div class="row row-eq-height">
+								<div style="display:inline-block; width:10%; text-align:center;">
+									<input type="radio" name="date" ng-disabled="true" ng-model="offer.RDV_datas.selected_time_slot" ng-value="$index"></input>
+								</div>
+								<div style="position:relative; display:inline-block; width:78%;">
+									<div class="img" style="position:absolute; top:50%; transform:translateY(-50%); width:1em; height:1em; background-image:url('Images/Calendrier.png'); background-position: 0% 0%;"></div>
+									<p style="display:inline-block; position:absolute; top:50%; transform:translateY(-50%); margin-left:2vw">: le  {{time_slot.date_slot | date:'dd/MM/yyyy'}}  à  {{time_slot.date_slot | date:'h:mma'}}</p>
+								</div>		
+								<div style="position:relative; display:inline-block; width:20%;">
+									<div class="img" style="position:absolute; top:50%; transform:translateY(-50%); width:1em; height:1em; background-image:url('Images/Horloge.png'); background-position: 0% 0%;"></div>
+									<p style="display:inline-block; position:absolute; top:50%; transform:translateY(-50%); margin-left:2vw">: {{time_slot.duration}}h</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+						
+			</div>
+			
+		</div>
+	
+	</div>
+
+</div>
+	
+		

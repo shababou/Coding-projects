@@ -1,0 +1,182 @@
+<div ng-controller="ctrlAdmin">
+	
+	<div ng-controller="ctrlPedagogicFields">
+
+		<div ng-if="categories_OK">
+
+
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="border:1px solid">
+					Liste des catégories :
+					<ul class="list-group">
+						<li class="list-group-item" ng-repeat="category in categories">
+							<input type="text" class="form-control input-sm" ng-model="category.name">
+								<button ng-click="updateOrDeleteDocument('Modification', 'Category', category)">OK</button>
+								<button ng-click="updateOrDeleteDocument('Deletion', 'Category', category)">SUPPR</button>
+							</input> 
+						</li>
+					</ul>
+					<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+						<button ng-click="addField()">+</button>
+						<button ng-click="removeField()">-</button>
+						<li class="list-group-item" ng-repeat="field in fields">
+							Nom de la catégorie : <input type="text" class="form-control input-sm" ng-model="new_categories[$index].name"></input>
+						</li>
+					</ul>
+					<button ng-click="addCategories(selection_categories)">ENREGISTRER</button>
+				</div>
+
+				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="border:1px solid">
+					Choix de la catégorie :
+					<select class="form-control select-sm" ng-options="category.name for category in categories" ng-init="selection_categories.selected_category=categories[0]" ng-model="selection_categories.selected_category" ng-change="setLevels()"></select>				
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" style="border:1px solid">
+						Liste des critères :
+						<ul class="list-group">
+							<li class="list-group-item" ng-repeat="criteria in selection_categories.selected_category.criterias">
+								<input type="text" class="form-control input-sm" ng-model="criteria.name">
+									<select class="form-control select-sm" ng-options="role.logical_name as role.visual_name for role in options_people" ng-model="criteria.role"></select> 
+									<select class="form-control select-sm" ng-options="type_offer.logical_name as type_offer.visual_name for type_offer in types_offer" ng-model="criteria.type_offer"></select>
+									<button ng-click="updateOrDeleteDocument('Modification', 'Criteria', criteria)">OK</button>
+									<button ng-click="updateOrDeleteDocument('Deletion', 'Criteria', criteria)">SUPPR</button>
+								</input>
+							</li>
+						</ul>
+						<div class="form-group">
+							<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+								<li class="list-group-item" ng-repeat="field in fields">
+									Texte du critère: <input type="text" class="form-control input-sm" ng-model="new_criterias[$index].name"></input>
+									<select class="form-control select-sm" ng-options="role.logical_name as role.visual_name for role in options_people" ng-init="new_criterias[$index].role=options_people[0].logical_name" ng-model="new_criterias[$index].role"></select>
+									<select class="form-control select-sm" ng-options="type_offer.logical_name as type_offer.visual_name for type_offer in types_offer" ng-init="new_criterias[$index].type_offer=types_offer[0].logical_name" ng-model="new_criterias[$index].type_offer"></select>	
+								</li>
+								<button ng-click="addField()">+</button>
+								<button ng-click="removeField()">-</button>
+							</ul>
+							<button ng-click="addCriterias(selection_categories)">ENREGISTRER</button>	
+						</div>
+					</div>
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" style="border:1px solid">
+						Liste des niveaux :
+						<ul class="list-group">
+							<li class="list-group-item" ng-repeat="level in selection_categories.selected_category.levels">
+								<input type="text" class="form-control input-sm" ng-model="level.name">
+									<button ng-click="updateOrDeleteDocument('Modification', 'Level', level)">OK</button>
+									<button ng-click="updateOrDeleteDocument('Deletion', 'Level', level)">SUPPR</button> 
+								</input>
+							</li>
+						</ul>
+						<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+							<button ng-click="addField()">+</button>
+							<button ng-click="removeField()">-</button>
+							<li class="list-group-item" ng-repeat="field in fields">
+								Nom du niveau: <input type="text" class="form-control input-sm" ng-model="new_levels[$index].name"></input>
+							</li>
+						</ul>
+						<button ng-click="addLevels(selection_categories)">ENREGISTRER</button>
+					</div>
+				</div>
+
+			</div>
+
+
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+				Choix du niveau :
+				<select class="form-control select-sm" ng-options="level.name for level in selection_categories.selected_category.levels" ng-init="selection_categories.selected_level=selection_categories.selected_category.levels[0]" ng-model="selection_categories.selected_level"></select>
+
+				<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="border:1px solid">
+					Liste des formats :
+					<ul class="list-group">
+						<li class="list-group-item" ng-repeat="format in selection_categories.selected_level.formats">
+							<input type="text" class="form-control input-sm" ng-model="format.name">
+								<button ng-click="updateOrDeleteDocument('Modification', 'Format', format)">OK</button>
+								<button ng-click="updateOrDeleteDocument('Deletion', 'Format', format)">SUPPR</button> 
+							</input>
+						</li>
+					</ul>
+					<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+						<button ng-click="addField()">+</button>
+						<button ng-click="removeField()">-</button>
+						<li class="list-group-item" ng-repeat="field in fields">
+							Nom du format: <input type="text" class="form-control input-sm" ng-model="new_formats[$index].name"></input>
+						</li>
+					</ul>
+					<button ng-click="addFormats(selection_categories)">ENREGISTRER</button>
+				</div>
+
+				<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="border:1px solid">
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">	
+						Liste des matières :
+						<ul class="list-group">
+							<li class="list-group-item" ng-repeat="topic in selection_categories.selected_level.topics">
+								<input type="text" class="form-control input-sm" ng-model="topic.name">
+									<button ng-click="updateOrDeleteDocument('Modification', 'Topic', topic)">OK</button>
+									<button ng-click="updateOrDeleteDocument('Deletion', 'Topic', topic)">SUPPR</button>
+								</input> 
+							</li>
+						</ul>
+						<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+							<button ng-click="addField()">+</button>
+							<button ng-click="removeField()">-</button>
+							<li class="list-group-item" ng-repeat="field in fields">
+								Nom de la matière: <input type="text" class="form-control input-sm" ng-model="new_topics[$index].name"></input>
+							</li>
+						</ul>
+						<button ng-click="addTopics(selection_categories)">ENREGISTRER</button>
+					</div>
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+						<div class="form-group">
+							Choix de la matière :
+							<select class="form-control select-sm" ng-options="topic.name for topic in selection_categories.selected_level.topics" ng-init="selection_categories.selected_topic=selection_categories.selected_level.topics[0]" ng-model="selection_categories.selected_topic" ng-change="setSubjects()"></select>
+						</div>
+						<div class="form-group">
+							Liste des sujets :
+							<ul class="list-group">
+								<li class="list-group-item" ng-repeat="subject in selection_categories.selected_topic.subjects">
+									<input type="text" class="form-control input-sm" ng-model="subject.name">
+										<button ng-click="updateOrDeleteDocument('Modification', 'Subject', subject)">OK</button>
+										<button ng-click="updateOrDeleteDocument('Deletion', 'Subject', subject)">SUPPR</button> 
+									</input> 
+								</li>
+							</ul>
+						</div>
+						<div class="form-group">
+							<ul class="list-group" ng-controller="ctrlAddAndRemoveFields">
+								<button ng-click="addField()">+</button>
+								<button ng-click="removeField()">-</button>
+								<li class="list-group-item" ng-repeat="field in fields">
+									Nom du sujet: <input type="text" class="form-control input-sm" ng-model="new_subjects[$index].name"></input>
+								</li>
+							</ul>
+							<button ng-click="addSubjects(selection_categories)">ENREGISTRER</button>
+						</div>
+					</div>
+				</div>
+
+			</div>	
+
+		</div>
+
+
+
+		<h2 style="text-align:left">Liste des commentaires</h2>
+		<table class="table table-hover" ng-init="getAllAdvices()">
+			<tr>
+				<th>Utilisateur</th>
+				<th>Date</th>
+				<th>Commentaire / idée</th>
+			</tr>
+			<tr ng-if="advices_OK" ng-repeat="advice in advices">			
+				<td>{{advice.user.username}}</a></th>
+				<td>{{advice.emission_date | date:'h:mma'}}</td>
+				<td>{{advice.text}}</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div ng-if="!is_admin">
+		FORBIDDEN
+	</div>
+	
+</div>

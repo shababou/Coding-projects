@@ -1,0 +1,56 @@
+<div class="container" ng-controller="ctrlWelcome">
+
+	<div ng-if="welcome_OK">
+
+		<h2 style="text-align:center">Liste des membres</h2>
+		<table class="table table-hover">
+			<tr>
+				<th>Pseudo</th>
+				<th>Activité</th>
+				<th>Ville</th>
+			</tr>
+			<tr ng-repeat="user in users">			
+				<td><a href="/Profile/{{user._id}}">{{user.username}}</a></th>
+				<td>{{user.activity}}</td>
+				<td>{{user.address.city}}</td>
+			</tr>
+		</table>
+
+		<h2 style="text-align:center">Liste des équipes</h2>
+		<table class="table table-hover">
+			<tr>
+				<th>Nom</th>
+				<th>Capitaine</th>
+				<th>Membres</th>
+			</tr>
+			<tr ng-repeat="team in teams">			
+				<td><a href="/Team/{{team._id}}">{{team.name}}</a></th>
+				<td>{{team.captain.username}}</td>
+				<td>{{team.users.length}}</td>
+			</tr>
+		</table>
+
+		<h2 style="margin-top:10vw; text-align:left">Un commentaire ? Une Idée ?</h2>
+		<div ng-controller="ctrlAddAndRemoveFields" ng-init="initNbFields(1)">
+			<button ng-click="addField()">+</button>
+			<button ng-click="removeField()">-</button>
+			<form class="form-horizontal" ng-controller="ctrlAdmin" ng-submit="addAdvices()">
+				<table class="table table-hover">
+					<tr>
+						<th>Utilisateur</th>
+						<th>Commentaire / idée</th>
+					</tr>
+					<tr ng-repeat="field in fields">			
+						<td>{{ME.username}}</a></th>
+						<td>
+							<textarea ng-model="advices[$index].text"></textarea>
+						</td>
+					</tr>
+				</table>
+				<button type="submit" class="btn">
+					SOUMETTRE
+				</button>
+			</form>
+		</div>
+
+</div>

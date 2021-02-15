@@ -1,0 +1,347 @@
+<div ng-if="ready" ng-controller="ctrlRealTime" ng-init="setRealTimeParamAndInitApp('Notification')">
+
+	<div>
+
+		<div ng-controller="ctrlProfile" ng-init="setProfile()">
+
+			<div ng-if="profile_OK">
+
+				<div class="container">
+
+					<form style="background:linear-gradient(#FAF8D9, #FCF6E8); padding:2vw; border-radius:2vw;" name="profileForm" ng-controller="setupUser" ng-submit="updateProfile()">
+
+						<div>
+
+							<div class="row">
+								<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xs-offset-0 col-sm-offset-0 col-md-offset-2 col-lg-offset-2">	
+									<h1 style="text-align:center">Profil de {{profile_Ctrl.username}}
+										<div style="display:inline-block; vertical-align:middle" ng-if="!is_ME" ng-init="context='Network'">
+											<relashionship context="context" ref="ME" other="profile_Ctrl" notif="false" next="false"></relashionship>	
+										</div>
+									</h1>
+								</div>		
+							</div>
+							<div class="row">
+								<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-5 col-sm-offset-5 col-md-offset-5 col-lg-offset-5">
+									<label for="photo">
+		      							<input type="file" style="display:none" name="photo" id="photo" ng-if="is_ME" file-model="updatePhoto"/>
+		      							<div ng-class="{'loader':loading_photo, 'img photo editable':is_ME, 'img photo':!is_ME}" style="width:10vw; height:10vw; background-image:url('{{profile_Ctrl.src_photo}}')"></div>
+		   							</label>
+								</div>
+							</div>
+						
+							<div class="row">
+								<div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+									<h3 style="text-align:center">Informations publiques</h3>
+									<div class="form-horizontal">
+										<div class="form-group">
+											<p class="col-xs-4 col-sm-5 col-md-5 col-lg-5" style="display:inline-block">
+												Membre depuis le:
+											</p>
+											<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7" style="display:inline-block">
+												{{profile_Ctrl.inscription_date | date:'dd/MM/yyyy'}}
+											</p>
+										</div>
+										<div class="form-group">
+											<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+												Pseudo (*):
+											</label>
+											<div class="col-xs-8 col-sm-6 col-md-6 col-lg-6">
+												<input type="text" class="form-control" ng-disabled="!is_ME" ng-model="profile_Ctrl.username" name="username" check-username required></input>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+												Prénom:
+											</label>
+											<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+												<input type="text" class="form-control" ng-disabled="!is_ME" ng-model="profile_Ctrl.first_name"></input>
+											</p>
+										</div>	
+										<div>											
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Activité dans la vie:
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="text" class="form-control" ng-disabled="!is_ME" ng-model="profile_Ctrl.activity"></input>
+												</p>
+											</div>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Lieu de pratique de l'activité:
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="number" class="form-control" ng-disabled="!is_ME" ng-model="profile_Ctrl.activity_place"></input>
+												</p>
+											</div>
+										</div>
+										<div ng-if="is_ME">
+											<h3 style="text-align:center">Mes informations privées:</h3>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Date de naissance (*):
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="date" class="form-control" ng-model="profile_Ctrl.birthdate" required></input>
+												</p>
+											</div>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Mot de passe (*):
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="text" class="form-control" ng-model="profile_Ctrl.password" ng-change="password_changed=true" required></input>
+												</p>
+											</div>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Adresse e-mail (*):
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="email" class="form-control" ng-model="profile_Ctrl.email" required></input>
+												</p>
+											</div>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Numéro de téléphone:
+												</label>
+												<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input type="string" class="form-control" ng-model="profile_Ctrl.phone_number"></input>
+												</p>
+											</div>
+											<div class="form-group">
+												<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+													Lieu de résidence (*):
+												</label>
+												<div class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+													<input google-place class="form-control" ng-model="profile_Ctrl.address" name="address" check-address required></input>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+									<h3 style="text-align:center;text-decoration: underline">A Propos</h3>
+									<textarea style="width:100%; height:100%; border:1px solid #cecece" ng-model="profile_Ctrl.description" ng-disabled="!is_ME"></textarea>
+								</div>
+							</div>	
+
+						</div>				
+					
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-controller="ctrlPedagogicFields">
+							<div ng-if="categories_OK">
+								<h3 style="text-align:center">Compétences enseignées</h3>
+								<select class="form-control select-sm" ng-options="category.name for category in categories" ng-init="selection_categories.selected_category=categories[0]" ng-model="selection_categories.selected_category" ng-change="setLevels(); setMatrixSkills(selection_categories.selected_category)"></select>
+								<table class="table table-hover" ng-init="setMatrixSkills(selection_categories.selected_category)">
+									<thead>
+										<tr>
+											<th>Matières</th>
+											<th ng-repeat="level_name in levels_names">{{level_name}}</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="topic_name in topics_names">
+											<td class="vertical">{{topic_name}}</td>
+											<td ng-repeat="level_name in levels_names">
+												<div ng-repeat="level in selection_categories.selected_category.levels">
+													<div ng-if="level.name==level_name">
+														<div ng-repeat="topic in level.topics">
+															<div ng-if="topic.name==topic_name">
+																<input class="skill" type="radio" value="{{topic._id}}" ng-controller="ctrlSkillI" ng-init="initSkillI(topic._id, profile_Ctrl.skills)" ng-disabled="!is_ME" ng-checked="skill_OK" ng-click="updateSkillI()"></input>						
+															</div>
+														</div>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="row" style="text-align:center;" ng-if="is_ME">
+							<button type="submit" class="btn" ng-disabled="profileForm.username.$error.checkUsername || profileForm.address.$error.checkAddress">
+								SAUVEGARDER
+							</button>
+						</div>
+						
+					</form>
+
+					<div class="row" ng-controller="ctrlPedagogicFields">
+						<h3 style="text-align:center">Notations</h3>						
+						<div ng-if="categories_OK" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-init="categories=profile_Ctrl.global_synthesis.categories; cat_filt=true">
+							<div ng-if="cat_filt" class="row">
+								<div class="form-group form-horizontal col-xs-6 col-sm-6 col-md-6 col-lg-6">
+									<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+										Catégorie:
+									</label>
+									<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+										<select class="form-control" ng-if="categories.length>0" ng-options="category.name for category in categories" ng-init="selection_categories.selected_category=categories[0]; setLevels();" ng-model="selection_categories.selected_category" ng-change="setLevels()"></select>
+									</p>
+								</div>
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">	
+										<table class="table table-hover">
+											<thead>
+												<tr>
+													<th>Critères</th>
+													<th>Nombre notes</th>
+													<th>Notes</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="criteria in selection_categories.selected_category.criterias.RDV">
+													<td>{{criteria.name}}</td>
+													<td>{{criteria.contexts.length}}</td>
+													<td>
+														<stars-rating title="{{roundNumber(criteria.average_mark, 10)}}" mark="criteria.average_mark" state="Diffused"></stars-rating>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">	
+										<table class="table table-hover">
+											<thead>
+												<tr>
+													<th>Critères</th>
+													<th>Notes</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="criteria in selection_categories.selected_category.criterias.Chat">
+													<td>{{criteria.name}}</td>
+													<td>
+														<thumbs-resume marks="criteria.resume_marks"></thumbs-resume>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>											
+									<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+										<div class="form-group form-horizontal">
+											<label class="col-xs-4 col-sm-5 col-md-5 col-lg-5 control-label">
+												Niveaux:
+											</label>
+											<p class="col-xs-8 col-sm-7 col-md-7 col-lg-7">
+												<select class="form-control" ng-options="level.name for level in selection_categories.selected_category.levels" ng-model="selection_categories.selected_level"></select>
+											</p>
+										</div>
+										<table class="table table-hover">
+											<thead>
+												<tr>
+													<th>Matières</th>
+													<th>Nombres notes</th>
+													<th>Heures</th>
+													<th>Notes</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="topic in selection_categories.selected_level.topics.RDV">
+													<td>{{topic.name}}</td>
+													<td>{{topic.contexts.length}}</td>
+													<td title="{{minutesToHours(topic.total_schedule)}}">{{minutesToHours(topic.total_schedule)}}</td>
+													<td>
+														<stars-rating title="{{roundNumber(topic.average_mark, 10)}}" mark="topic.average_mark" state="Diffused"></stars-rating>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>										
+									<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+										<table class="table table-hover">
+											<thead>
+												<tr>
+													<th>Matières</th>
+													<th>Notes</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="topic in selection_categories.selected_level.topics.Chat">
+													<td>{{topic.name}}</td>
+													<td>
+														<thumbs-resume marks="topic.resume_marks"></thumbs-resume>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<h3 style="text-align:center">Réseau</h3>
+								<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Pseudo</th>
+										<th>Activité</th>
+										<th>Date de contact</th>
+										<th ng-if="is_ME"> </th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="user in profile_Ctrl.linked_users">
+										<td>
+											<img class="img-responsive" style="height:1.5em; display:inline-block; vertical-align:middle; cursor:pointer" ng-src="{{profile_Ctrl.src_photo}}">
+											<a href="/Profile/{{user.user._id}}">{{user.user.username}}</a>
+										</td>
+										<td>{{user.user.activity}}</td>
+										<td>{{user.contact_date | date:'dd/MM/yyyy'}}</td>
+										<td ng-if="is_ME" ng-init="context='Network'">
+											<relashionship context="context" ref="profile_Ctrl" other="user.user" notif="false" next="true"></relashionship>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<h3 style="text-align:center">Equipes</h3>
+							<table class="table table-hover" ng-init="context_1='Captaincy'" ng-controller="ctrlTeam">
+								<thead>
+									<tr>
+										<th>Nom</th>
+										<th>Capitaine</th>
+										<th>Date de contact</th>
+										<th>Statut</th>
+										<th ng-if="is_ME"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="team in profile_Ctrl.linked_teams" ng-controller="ctrlRelashionship" ng-init="setRelashionshipDatas(profile_Ctrl, team.team, context_1, false); iam_captain=isCaptain(current_status, team.team)">
+										<td>																				
+											<img class="img-responsive" style="height:1.5em; display:inline-block; vertical-align:middle" ng-src="{{team.team.src_photo}}">
+											<a href="/Team/{{team.team._id}}">{{team.team.name}}</a>
+										</td>
+										<td>{{team.team.captain.username}} {{iam_captain.alone}}	</td>
+										<td>{{team.contact_date | date:'dd/MM/yyyy'}}</td>
+										<td ng-init="context_2='Membership'">{{is_captain}}
+											<relashionship ng-if="!iam_captain.result || 
+											( (iam_captain.result && iam_captain.alone && (current_status!='Accepting') && (current_status!='Accepted')) || !iam_captain.alone )" context="context_1" ref="profile_Ctrl" other="team.team" notif="false" next="true"></relashionship>
+											<relashionship ng-if="iam_captain.result && iam_captain.alone" context="context_1" ref="profile_Ctrl" other="team.team" notif="false" next="false"></relashionship>
+											<relashionship ng-if="!iam_captain.result" context="context_2" ref="profile_Ctrl" other="team.team" notif="false" next="true"></relashionship>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+
+		</div>
+	
+	</div>
+
+</div>
+

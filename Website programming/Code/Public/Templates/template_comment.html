@@ -1,0 +1,41 @@
+<div>
+
+	<form name="creationForm" ng-controller="setupComment" ng-init="initComment(report, index)">	
+
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			Observation complémentaire sur la séance:
+			<textarea ng-readonly="report.participants[index].complementary_datas.status=='Diffused'" ng-model="report.participants[index].complementary_datas.general_comment"></textarea>
+		</div>
+
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			{{report.participants[index].user.username}}, laisse un commentaire à {{report.teacher.username}}:
+			<textarea ng-readonly="report.participants[index].complementary_datas.status=='Diffused'" ng-model="comment_from_participant_I_to_teacher[0].comment"></textarea>
+		</div>
+
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			{{report.participants[index].user.username}}, comment évalues-tu {{report.teacher.username}} ?
+			<div ng-repeat="content in report.request.contents" ng-hide="$last" style="display:block">
+				<u>{{content.category.name}}</u>
+				<div ng-repeat="criteria in content.category.criterias | filter: {role:'Teacher', type_offer:'RDV'}" ng-init="init_marks_OK=false">
+					<div ng-if="report.participants[index].complementary_datas.status=='New'" ng-init="marks_from_participant_I_to_teacher[0].marks.push({id_criteria:criteria._id}); $parent.init_marks_OK=true"></div>
+					<div ng-if="init_marks_OK || (report.participants[index].complementary_datas.status!='New')" ng-init="test_criteria=$root.isObjectInArray(marks_from_participant_I_to_teacher[0].marks, {id_criteria:criteria._id}, 'id_criteria')">
+						<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 control-label" style="vertical-align:center">
+							{{criteria.name}}:
+						</div>
+						<stars-rating style="vertical-align:center" title="{{marks_from_participant_I_to_teacher[0].marks[test_criteria.index].mark}}" mark="marks_from_participant_I_to_teacher[0].marks[test_criteria.index].mark" state="report.participants[index].complementary_datas.status"></stars-rating>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row" style="text-align:center;" ng-if="report.participants[index].complementary_datas.status=='New'">
+			<button class="btn action" type="button" ng-click="createComment('RDV')">
+				DIFFUSER
+			</button>
+		</div>		
+
+	</form>
+			
+</div>
+	

@@ -1,0 +1,186 @@
+
+package IHMWelcome;
+
+/**
+ * @a.jacopin
+ * L'écran welcome correspond à la page de présentation du jeu.
+ * Elle travaille avec le serveur  (cf. package Réseaux).
+ */
+
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+
+import IHMcoach.*;
+import IHMParieur.*;
+import Reseaux.*;
+import liguapoulpe.*;
+
+
+
+
+
+public class Welcome extends JFrame
+{
+
+        // Pour communiquer avec le serveur
+        TCP_SERVER server;
+        private String IPjoueur, IPserver;
+        private int port;
+
+        
+        // Winglets pour la création de la fenêtre
+	JLayeredPane layer0 ;
+	Bouton coach;
+        JButton parieur ;
+        LabelOutils welcome,choix ;
+        JLabel background;
+       	public String pathImage ;
+
+
+
+
+	public Welcome(String hostIPadress,int _port,String myIPadress,TCP_SERVER myTCP)
+	{
+                server = myTCP ;
+                IPjoueur=myIPadress;
+                port=_port;
+                IPserver=hostIPadress;
+
+
+                pathImage = "C:/Users/Murielle Molliet/Documents/NetBeansProjects/TheLast/src/images/" ;
+
+
+                
+                addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.out.println("bye");
+				dispose();
+				System.exit(0);
+			}
+		});
+
+                //Définit le titre de la fenêtre.
+                this.setTitle("Welcome to the Poulpe Ligue !");
+                //Définit la taille de la fenêtre.
+                this.setSize(800, 600);
+                //Positionne la fenêtre au centre de l'écran.
+                this.setLocationRelativeTo(null);
+                //Empêche le redimensionnement de la fenêtre.
+                this.setResizable(false);
+	}
+
+   
+
+
+/**
+ * Les getters
+ */
+ public String getPathImage() { return pathImage; }
+
+
+/**
+ * On construit le fond d'écran avec les composants (boutons et titres)
+ */
+
+	public void addBackground()
+	{
+
+		layer0 = new JLayeredPane();
+
+		//Pour le fond d'écran
+		background = new JLabel (new ImageIcon (pathImage + "poulpecoupe.jpg"));
+		background.setBounds (0,0,800,600) ;
+		background.setOpaque(true);
+		layer0.add (background, new Integer (0));
+		getContentPane().add(layer0, BorderLayout.CENTER);
+
+
+
+		//Pour les boutons
+                coach = new Bouton (100,350,270,90);
+                coach.setIcon(new ImageIcon(pathImage + "Bouton_coach.jpg" ));
+                if(server.getTournament().getNVal()==16){coach.setEnabled(false);}
+                coach.addMouseListener(new java.awt.event.MouseAdapter() {
+                 @Override
+                     public void mouseClicked(java.awt.event.MouseEvent evt)
+                     {
+                            //System.out.println("coach");
+
+                            new TCP_CLIENT(IPserver,port,"choice"+":"+IPjoueur+":"+"1").start();
+
+                            int nbCoachs = server.getNumberOfCoachs();
+                            if (server.getTournament().getNVal()!=16)
+                            {
+                                 CH_1_ecrandinscription espaceCoach = new CH_1_ecrandinscription(IPserver,port,IPjoueur,server);
+                                 espaceCoach.setVisible(true);
+                                 setVisible(false);
+                            }
+                            else
+                            {
+                                Erreur error = new Erreur();
+                                error.addBackgroundError();
+                                error.setVisible(true);
+                            }
+                     }
+                    });
+
+
+
+                  parieur = new JButton();
+                  parieur.addMouseListener(new java.awt.event.MouseAdapter() {
+                  @Override
+                  public void mouseClicked(java.awt.event.MouseEvent evt)
+                  {
+                      if(server.getTournament().getIsStarted()==true)
+                      {
+                        System.out.println("parieur");
+
+                        new TCP_CLIENT(IPserver,port,"choice"+":"+IPjoueur+":"+"2").start();
+                            
+                        int numParieur = server.getMyID();
+                        EcranParieur1 espaceParieur = new EcranParieur1(IPserver,port,IPjoueur,server,pathImage,numParieur);
+                        espaceParieur.addBackground1();
+                        espaceParieur.setVisible(true);
+                        setVisible(false);
+                      }
+                  }
+                  }
+                  );
+               
+
+
+                parieur.setBounds(430,350,270,90);
+                parieur.setOpaque(true);
+                parieur.setEnabled(true);
+                parieur.setIcon(new ImageIcon(pathImage + "Bouton_punter.jpg" ));
+
+
+                //Pour le titre
+                welcome = new LabelOutils(150,100,600,50);
+                welcome.addMessage("Bienvenue à la Poulpe Ligue !","Arial",40,Color.red);
+
+                //Pour les indications
+                choix = new LabelOutils(200,200,450,50);
+                choix.addMessage("Veuillez choisir votre Espace", "Arial", 30, Color.gray);
+
+		// On ajoute les composants
+		layer0.add (coach,new Integer (1));
+		layer0.add (parieur,new Integer (1));
+		layer0.add (welcome,new Integer (1));
+                layer0.add (choix,new Integer (1));
+	}
+
+    
+}
+
+

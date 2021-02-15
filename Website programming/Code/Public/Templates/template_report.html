@@ -1,0 +1,191 @@
+<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 popup">
+
+	<div ng-controller="setupReport">
+
+
+		<div class="popup_header">
+			<div class="popup_title">RAPPORT D'APRES-SEANCE</div>
+			<div class="popup_close" ng-if="(((me._id==report.teacher._id) && (report.status!='New')) || participating)">X</div>
+		</div>		
+			
+
+			
+		<div class="container popup_content">
+					
+			<details class="row" style="margin:1vw 0 1vw 0; border:1px solid; background:linear-gradient(#c7dbf9, #DAF0F0)">
+				<summary style="border-bottom:2px solid #5E90DB">ANNONCE</summary>						
+				<div>Emise le {{request.emission_date | date:'dd/MM/yyyy'}} à {{request.emission_date | date:'h:mma'}} par {{request.student.username}} - {{request.student.activity}}</div>
+				<div>Délai: {{request.target_date | date:'dd/MM/yyyy'}} à {{request.target_date | date:'h:mma'}}</div>				
+				<div ng-repeat="content in request.contents" ng-hide="$last">
+					<p>
+						<u>
+							{{content.category.name}}
+							<li ng-repeat="data in content.datas">
+								{{data.format.name}} - {{data.topic.name}}; sujets travaillés:
+								<li ng-if="data.format.name!='Question'" ng-repeat="subject in data.subjects">
+									{{subject.subject.name}}
+								</li>
+								<li ng-if="data.format.name=='Question'">
+									{{data.other}}
+								</li>		
+							</li>
+						</u>						
+					</p>		
+				</div>				
+			</details>
+
+			<details class="row" style="margin:1vw 0 1vw 0; border:1px solid; background:linear-gradient(#EDA6B2, #F95B00)">
+				<summary style="border-bottom:2px solid #ED2626">OFFRE</summary>				
+				<div>Emise le {{offer.emission_date | date:'dd/MM/yyyy'}} à {{offer.emission_date | date:'h:mma'}} par {{offer.teacher.username}} - {{offer.teacher.activity}}</div>
+				<div>Prix: {{offer.RDV_datas.price}}€</div>	
+				<div>Créneaux proposés:</div>		
+				<ul ng-repeat="time_slot in offer.RDV_datas.time_slots">
+					<li>{{time_slot.date_slot | date:'dd/MM/yyyy'}} à {{time_slot.date_slot | date:'h:mma'}}</li>
+				</ul>								
+			</details>
+				
+			
+			<form name="creationForm" ng-submit="createReport('RDV')">
+				<details class="row" style="margin:1vw 0 1vw 0; border:1px solid; background-color:white" open>		
+					<summary>SEANCE</summary>
+					
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 form-group" style="display:inline-block">
+							<label class="control-label">
+								Date:
+							</label>
+							<div>
+								<input class="form-control" type="date" ng-readonly="report.status!='New'" ng-change="setTotalDuration()" ng-model="report.start_time" required></input>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 form-group" style="display:inline-block">
+							<label class="control-label">
+								Début:
+							</label>
+							<div>
+								<input class="form-control" type="time"  ng-readonly="report.status!='New'" ng-change="setTotalDuration()" ng-model="report.start_time" required></input>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-4 col-md-4 col-lg-4 form-group" style="display:inline-block">
+							<label class="control-label">
+								Fin:
+							</label>
+							<div>
+								<input class="form-control" type="time"  ng-readonly="report.status!='New'" ng-change="setTotalDuration()" ng-model="report.end_time" required></input>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-horizontal">
+						<div class="form-group">
+							<label class="col-xs-2 col-sm-2 col-md-2 col-lg-2 control-label">
+								Chez:
+							</label>
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+								<select class="form-control" ng-disabled="report.status!='New'" ng-options="whole_users.indexOf(user) as user.username for user in whole_users" ng-model="report.selected_address"></select>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-horizontal">
+						Eleves qui ont participé:
+						<div ng-repeat="participant in offer.RDV_datas.participants" ng-init="test_participant_marks=$root.isObjectInArray(report.marks_from_teacher, {id_assessed:participant.user._id}, 'id_assessed'); test_participant_comment=$root.isObjectInArray(report.comments_from_teacher, {id_assessed:participant.user._id}, 'id_assessed')">
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group" style="display:inline-block">
+								<label class="control-label">
+									- {{participant.user.username}}	
+								</label>
+								<p>
+									<select class="form-control" ng-disabled="report.status!='New'" ng-options="option.logical_name as option.visual_name for option in options_presence" ng-model="report.participants[$index].presence" ng-change="report.marks_from_teacher[test_participant_marks.index].presence=report.participants[$index].presence; report.comments_from_teacher[test_participant_comment.index].presence=report.participants[$index].presence;"></select>
+								</p>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 form-group" style="display:inline-block" ng-if="report.participants[$index].presence">
+								<label class="control-label">
+									a payé
+								</label>
+								<p>
+									<input type="text" class="form-control" style="display:inline-block; vertical-align:middle; width:60%" ng-readonly="report.status!='New'" ng-model="report.participants[$index].paiement" required>€</input>
+								</p>
+							</div> 						
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-controller="ctrlSchedule">
+						Répartition du temps sur la séance:
+						<div class="form-horizontal" ng-if="date_OK" ng-repeat="content in request.contents">
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 form-group">
+								<div ng-repeat="data in content.datas" ng-init="test_data=$root.isObjectInArray(report.schedules_datas.schedules, {id_topic:data.topic._id, id_format:data.format._id}, 'id_topic')">
+									<label class="col-xs-12 col-sm-6 col-md-6 col-lg-6 control-label">
+										- {{data.format.name}} : {{data.topic.name}}
+									</label>
+									<p class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+										<input type="range" class="form-control" style="display:inline-block; vertical-align:middle; width:80%" ng-disabled="report.status!='New'" min="0" max="100" step="1" ng-init="setSchedules()" ng-change="setSchedules()" ng-model="schedule_positions[test_data.index]">{{report.schedules_datas.schedules[test_data.index].schedule}}min</input>
+									</p>
+								</div>
+							</div> 							
+						</div>						
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						Remarques / Observations générales sur la séance:
+						<textarea ng-readonly="report.status!='New'" ng-model="report.general_comment"></textarea>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin:0.5vw 0 0.5vw 0; background-color:#EBEDF0;" ng-repeat="participant in offer.RDV_datas.participants">
+						<div ng-if="report.participants[$index].presence && (me._id==report.teacher._id || me._id==participant.user._id)">
+							Conseils à {{participant.user.username}} :
+							<div style="display:inline-block; margin-left:1vw" ng-init="context='Network'">
+								<relashionship context="context" ref="me" other="participant.user" notif="false" next="false"></relashionship>
+							</div>
+							<textarea ng-readonly="report.status!='New'" ng-init="test_participant=$root.isObjectInArray(report.comments_from_teacher, {id_assessed:participant.user._id}, 'id_assessed')" ng-model="report.comments_from_teacher[test_participant.index].comment"></textarea>
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-if="me._id==report.teacher._id || (report.participants[$index].complementary_datas.status=='Diffused')" ng-init="test_participant=$root.isObjectInArray(report.marks_from_teacher, {id_assessed:participant.user._id}, 'id_assessed')">
+								<div ng-repeat="content in request.contents" ng-hide="$last" style="display:block">					<u>{{content.category.name}}</u>
+									<div style="display:block" ng-repeat="criteria in content.category.criterias | filter: {role:'Participant', type_offer:'RDV'}" ng-init="init_marks_OK=false">
+										<div ng-if="report.status=='New'" ng-init="report.marks_from_teacher[test_participant.index].marks.push({id_criteria:criteria._id}); $parent.init_marks_OK=true"></div>
+										<div ng-if="init_marks_OK || (report.status!='New')" ng-init="test_criteria=$root.isObjectInArray(report.marks_from_teacher[test_participant.index].marks, {id_criteria:criteria._id}, 'id_criteria')">
+											<div class="col-xs-8 col-sm-8 col-md-8 col-lg-8 control-label" style="vertical-align:center">
+												{{criteria.name}}:											
+											</div>
+											<stars-rating style="vertical-align:center" title="{{report.marks_from_teacher[test_participant.index].marks[test_criteria.index].mark}}" mark="report.marks_from_teacher[test_participant.index].marks[test_criteria.index].mark" state="report.status"></stars-rating>
+										</div>
+									</div>
+								</div>	 					
+							</div>
+						</div>
+					</div>
+
+				</details>
+
+				<div class="row" style="text-align:center;" ng-if="report.status=='New'">
+					<button class="btn action" type="submit">
+						DIFFUSER
+					</button>
+				</div>
+			
+			</form>
+
+
+			<div ng-if="report.status!='New'" ng-repeat="participant in report.participants">
+				<details class="row" style="margin:1vw 0 1vw 0; border:1px solid; background:linear-gradient(#c7dbf9, #ccffff); cursor:pointer" ng-if="(participant.presence && ( ((me._id==report.teacher._id) && (participant.complementary_datas.status=='Diffused')) || (me._id==participant.user._id)) )">
+					<summary style="border-bottom:2px solid #2773E6">
+						Commentaire de {{participant.user.username}} sur {{report.teacher.username}}
+						<div style="display:inline-block; margin-left:1vw" ng-init="context='Network'">
+							<relashionship context="context" ref="me" other="report.teacher" notif="false" next="false"></relashionship>	
+						</div>
+					</summary>
+					<comment-i index="$index" report="report"></comment-i>
+				</details>
+			</div>
+	
+
+		</div>
+			
+	</div>
+		
+		
+	
+</div>
+	
+
+
+
+

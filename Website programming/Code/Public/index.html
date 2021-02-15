@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html ng-app="app">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<base href='/'>
+
+
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script> 
+		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>-->
+	 		
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.min.js"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"></link> 
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCOOQzj4UYuqP_wftBQqdo6dscjn2EbGK4&amp;libraries=places"></script>
+
+		<link rel="stylesheet" href="CSS/Generalities.css" />
+
+		<script src="/socket.io/socket.io.js"></script>
+		
+		<script src="app.js"></script>
+		<script src="Routes.js"></script>
+		<script src="Factories/factory_auth.js"></script>
+		<script src="Factories/factory_requests.js"></script>
+		<script src='Factories/state-machine.js'></script>
+		<script src="Factories/factory_users.js"></script>	
+		<script src="Factories/factory_categories.js"></script>
+		<script src="Factories/factory_criterias.js"></script>
+		<script src="Factories/factory_levels.js"></script>
+		<script src="Factories/factory_formats.js"></script>
+		<script src="Factories/factory_topics.js"></script>
+		<script src="Factories/factory_subjects.js"></script>
+		<script src="Factories/factory_offers.js"></script>
+		<script src="Factories/factory_notifications.js"></script>
+		<script src="Factories/factory_files.js"></script>
+		<script src="Factories/factory_reports.js"></script>
+		<script src="Factories/factory_marks.js"></script>
+		<script src="Factories/factory_comments.js"></script>
+		<script src="Factories/factory_schedules.js"></script>
+		<script src="Factories/factory_teams.js"></script>
+		<script src="Factories/factory_dialogues.js"></script>
+		<script src="Factories/factory_messages.js"></script>
+		<script src="Factories/factory_admin.js"></script>
+		<script src="Factories/services_relashionship.js"></script>
+		<script src="Factories/services_network.js"></script>
+		<script src="Factories/services_team.js"></script>
+		<script src="Factories/services_notifications.js"></script>
+		<script src="Factories/services_google.js"></script>
+		<script src="Factories/services_misc.js"></script>
+		<script src="Factories/services_users.js"></script>
+		<script src="Directives/directives_requests.js"></script>
+		<script src="Directives/directives_offers.js"></script>
+		<script src="Directives/directives_reports.js"></script>
+		<script src="Directives/directives_google.js"></script>
+		<script src="Directives/directives_files.js"></script>
+		<script src="Directives/directives_thumbs_rating.js"></script>
+		<script src="Directives/directives_stars_rating.js"></script>
+		<script src="Directives/directives_chat_marks.js"></script>
+		<script src="Directives/directives_auth.js"></script>
+		<script src="Directives/directives_relashionship.js"></script>
+		<script src="Directives/directives_controls.js"></script>
+		<script src="Controllers/controllers_filters.js"></script>
+		<script src="Controllers/controllers_users.js"></script>
+		<script src="Controllers/controllers_relashionship.js"></script>
+		<script src="Controllers/controllers_auth.js"></script>
+		<script src="Controllers/controllers_admin.js"></script>
+		<script src="Controllers/controllers_requests.js"></script>
+		<script src="Controllers/controllers_offers.js"></script>
+		<script src="Controllers/controllers_chat_marks.js"></script>
+		<script src="Controllers/controllers_pedagogic.js"></script>
+		<script src="Controllers/controllers_misc.js"></script>
+		<script src="Controllers/controllers_welcome.js"></script>
+		<script src="Controllers/controllers_realTime.js"></script>
+		<script src="Controllers/controllers_activities.js"></script>
+		<script src="Controllers/controllers_reports.js"></script>
+		<script src="Controllers/controllers_teams.js"></script>
+		<script src="Controllers/controllers_dialogues.js"></script>
+	</head>
+
+
+
+	<div ng-controller="ctrlGeneral">
+
+
+		<nav class="navbar navbar-default" ng-controller="ctrlAuthentification">			
+
+			<div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			    	<button class="navbar-toggle collapsed" style="margin:0" type="button" data-toggle="collapse" data-target="#detail" aria-expanded="false" aria-controls="navbar">
+			    		<span class="sr-only">Toggle navigation</span>
+			    		<span class="icon-bar"></span>
+			    		<span class="icon-bar"></span>
+			    		<span class="icon-bar"></span>
+			    	</button>
+			    	<a class="navbar-brand" style="font-size:30px" href="/">HT</a>
+			    	<form class="navbar-brand" style="font-size:1.5vw; border-right:1px solid" ng-if="is_logged" ng-submit="doAuthMethod()">
+						<label class="control-label">Bonjour {{ME.username}}</label>
+						<button class="btn btn-default" style="padding:0" type="submit" ng-click="selection_auth.name='Déconnexion'">Logout</button>
+					</form>
+					<form class="navbar-brand" style="width:63%; font-size:1.5vw; margin-left:-1.5vw; padding:0;" ng-if="!is_logged" ng-submit="doAuthMethod()">
+						<div class="form-group" style="display:inline-block; width:67%; vertical-align:middle">
+							<label class="control-label">Username:</label>
+							<input class="form-control" style="display:inline-block; width:20%; min-width:0px; padding:0" type="text" ng-model="user_coming.username" required></input>
+							<label class="control-label">Password:</label>
+							<input class="form-control" style="display:inline-block; width:20%; min-width:0px; padding:0" type="password" ng-model="user_coming.password" required></input>
+						</div>
+						<div class="form-group" style="display:inline-block; width:32%; vertical-align:middle">
+							<button class="btn btn-default" style="padding:0" type="submit" ng-click="selection_auth.name='Connexion'">SE CONNECTER</button>
+							<a style="display:block" ng-click="authNeeded()">Pas encore inscrit ?</a>
+						</div>
+					</form>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div id="detail" class="navbar-collapse collapse">
+				    <ul class="nav navbar-nav">
+				    	<li data-toggle="collapse" data-target="#detail"><a href="/Welcome">Accueil</a></li>
+				    	<li ng-if="is_logged" data-toggle="collapse" data-target="#detail"><a class="glyphicon glyphicon-bell" style="font-size:1em" href="/Activities"></a></li>
+				    	<li ng-if="is_logged" data-toggle="collapse" data-target="#detail"><a href="/Profile/{{ME._id}}">Mon profil</a></li>
+						<li><a href="/Requests" data-toggle="collapse" data-target="#detail">Les annonces</a></li>
+						<li ng-if="is_logged" data-toggle="collapse" data-target="#detail"><a href="/RequestCreation">Créer une annonce</a></li>
+						<li ng-if="is_logged"><a href="/TeamCreation" data-toggle="collapse" data-target="#detail">Créer une équipe</a></li>
+				  	</ul>
+				</div><!-- /.navbar-collapse -->
+
+			</div><!-- /.container-fluid -->
+
+		</nav>
+	
+
+		<div ng-view></div>
+
+		<div class="background_popup"></div>
+		<div ng-controller="ctrlAuthPopup">
+			<authentification ng-if="show_auth"></authentification>
+		</div>
+
+
+	</div>
+
+
+	
+
+</html>
